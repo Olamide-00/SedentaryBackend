@@ -1,7 +1,7 @@
 const Joi = require("joi");
 const User = require("../models/user");
-
-
+const HashPassword = require("../utils/hashPasword")
+const bcrypt = require("bcrypt")
 
 
 
@@ -21,12 +21,14 @@ const Uservalidation = Joi.object({
 exports.SignUp = async (req, res) => {
 
     const { error } = Uservalidation.validate(req.body);
+
     if(error) {
         return res.status(400).send(error.details[0].message)
     }
     
     
-    const { name, email, password } = req.body;
+    const { name, email } = req.body;
+    const password = HashPassword(req.body.password);
 
     try {
         // checking for existing user
@@ -55,7 +57,7 @@ exports.Login = async (req, res) => {
         if(!newUser) {
             return res.status(400).send("User does'nt exist")
         }
-        if(newUser.password !== password) {
+        if(!bcrypt.compareSync(password, newUser.password)) {
             return res.status(400).send("Password does'nt match")
         }
         res.status(200).send("Successful")

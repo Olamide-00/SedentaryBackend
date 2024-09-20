@@ -19,4 +19,7 @@ mongoose.connect(dbUrl)
 
 
 
-app.use("/", UserRouter);
+app.use(UserRouter);
+app.get("/home", (req, res) => {
+    res.send("<h1>Home</h1>")
+})
